@@ -118,13 +118,14 @@ if __name__ == '__main__':
     global save_path
     name = 'katametriseis_10_processed.csv'
     save_dir = 'elect'
-    window_size = 5
+    window_size = 8
     stride_size = 1
     num_covariates = 4
-    train_start = '2009-01-31'
+    train_start = '2008-07-31'
     train_end = '2013-10-31'
     test_start = '2014-01-31' #need additional 7 days as given info
     test_end = '2018-10-31'
+    scale_0_1 = True
 
     save_path = os.path.join('data', save_dir)
     if not os.path.exists(save_path):
@@ -136,6 +137,10 @@ if __name__ == '__main__':
 
 
     data_frame = pd.read_csv(csv_path, sep=",", index_col=0, parse_dates=True, decimal='.')
+    if scale_0_1:
+        data_frame -= data_frame.min()  # subtract by the min
+        data_frame /= data_frame.max()  # then divide by the max
+
     covariates = gen_covariates(data_frame[train_start:test_end].index, num_covariates)
     train_data = data_frame[train_start:train_end].values
     test_data = data_frame[test_start:test_end].values
